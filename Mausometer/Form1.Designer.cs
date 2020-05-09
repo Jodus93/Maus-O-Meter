@@ -52,12 +52,12 @@
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.groupBoxClicks = new System.Windows.Forms.GroupBox();
             this.Progressbarlabel = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.einstellungenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LastResetlabel = new System.Windows.Forms.Label();
-            this.groupBox3.SuspendLayout();
+            this.groupBoxClicks.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -281,16 +281,16 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Mausrad";
             // 
-            // groupBox3
+            // groupBoxClicks
             // 
-            this.groupBox3.Controls.Add(this.PercRIGHT);
-            this.groupBox3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.groupBox3.Location = new System.Drawing.Point(15, 154);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(307, 82);
-            this.groupBox3.TabIndex = 23;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Mausklicks";
+            this.groupBoxClicks.Controls.Add(this.PercRIGHT);
+            this.groupBoxClicks.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBoxClicks.Location = new System.Drawing.Point(15, 154);
+            this.groupBoxClicks.Name = "groupBoxClicks";
+            this.groupBoxClicks.Size = new System.Drawing.Size(307, 82);
+            this.groupBoxClicks.TabIndex = 23;
+            this.groupBoxClicks.TabStop = false;
+            this.groupBoxClicks.Text = "Mausklicks";
             // 
             // Progressbarlabel
             // 
@@ -354,7 +354,7 @@
             this.Controls.Add(this.labelKM);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.groupBoxClicks);
             this.ForeColor = System.Drawing.Color.Black;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.HelpButton = true;
@@ -363,8 +363,11 @@
             this.Name = "Form1";
             this.Opacity = 0.98D;
             this.Text = "Maus-O-Meter";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
-            this.groupBox3.ResumeLayout(false);
+            this.MouseEnter += new System.EventHandler(this.Form1_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.Form1_MouseLeave);
+            this.groupBoxClicks.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -393,7 +396,7 @@
         private System.Windows.Forms.Label labelDestination;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBoxClicks;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label Progressbarlabel;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;

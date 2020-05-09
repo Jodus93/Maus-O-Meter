@@ -17,6 +17,7 @@ namespace Mausometer
         double DPI;
         
         int ClickLEFT, ClickRIGHT, ClickMIDDLE;
+                int ClickLEFT_LOADED, ClickRIGHT_LOADED, ClickMIDDLE_LOADED;
         double sum; 
         double distance;
         double MWheelUP;
@@ -24,6 +25,10 @@ namespace Mausometer
         int destinationDist;
         string destinationName;
         DateTime lastReset;
+
+        bool mouseEnterflag;
+
+
 
         static int ScrWidth = Screen.PrimaryScreen.Bounds.Width;
         static int ScrHeight = Screen.PrimaryScreen.Bounds.Height;
@@ -56,8 +61,8 @@ namespace Mausometer
                 DPI = DPICalc(ScrWidth, ScrHeight, Monitor);
                 distance = Convert.ToDouble(IO.load("distance"));
                 ClickLEFT = Convert.ToInt32(IO.load("left"));
-                ClickRIGHT = Convert.ToInt32(IO.load("middle"));
-                ClickMIDDLE = Convert.ToInt32(IO.load("right"));
+                ClickMIDDLE = Convert.ToInt32(IO.load("middle"));
+                ClickRIGHT = Convert.ToInt32(IO.load("right"));
                 MWheelUP = Convert.ToDouble(IO.load("up"));
                 MWheelDOWN = Convert.ToDouble(IO.load("down"));
                 destinationName = IO.load("destinationName");
@@ -72,6 +77,13 @@ namespace Mausometer
             }
               sum = ClickLEFT + ClickMIDDLE + ClickRIGHT;
 
+
+
+            //Geladenen Stand abspeichern. Zur Berechnung des heutigen Erfolgs
+            ClickLEFT_LOADED = ClickLEFT;
+            ClickMIDDLE_LOADED = ClickMIDDLE;
+            ClickRIGHT_LOADED = ClickRIGHT;
+
             //LastResest und Progressbar einrichten
             progressBar1.Maximum = (int)destinationDist;
             labelDestination.Text = destinationName;
@@ -79,8 +91,9 @@ namespace Mausometer
 
             //Bei erstmaligem Programmstart Reseten
             DateTime InitialDate = new DateTime(1900, 1, 1, 0, 0, 0);
-            if (DateTime.Compare(lastReset,InitialDate)==0) DataReset(); 
-          
+            if (DateTime.Compare(lastReset,InitialDate)==0) DataReset();
+
+            mouseEnterflag = false;
 
 
             //Darstellung
@@ -148,55 +161,73 @@ namespace Mausometer
         private void GUIrefresh()
         {
 
-            //Distanz
-            double distancerounded = Math.Round(distance, 0);
-            labelCM.Text = (distancerounded % 100).ToString() + " cm";
-            labelM.Text = distance.ToString();
-            labelM.Text = (Math.Truncate(distancerounded / 100) % 1000).ToString() + " m";
-            labelKM.Text = Math.Truncate(distance / 100000).ToString() + " km";
-
-
-
-
-
-            //Klicks
-            labelLEFT.Text = ClickLEFT.ToString();
-            labelMIDDLE.Text = ClickMIDDLE.ToString();
-            labelRIGHT.Text = ClickRIGHT.ToString();
-            sum = ClickLEFT + ClickMIDDLE + ClickRIGHT;
-
-            if (sum != 0) 
-            { 
-            double PercLEFTClick = (ClickLEFT / sum) * 100;
-            double PercMIDDLEClick = (ClickMIDDLE / sum) * 100;
-            double PercRIGHTClick = (ClickRIGHT / sum) * 100;
-            PercLEFT.Text = Math.Round(PercLEFTClick, 1).ToString() + " %";
-            PercMIDDLE.Text = Math.Round(PercMIDDLEClick, 1).ToString() + " %";
-            PercRIGHT.Text = Math.Round(PercRIGHTClick, 1).ToString() + " %";
-              }
-
-            //Wheelrounds
-            double RoundsUP = MWheelUP / 24;
-            double RoundsDOWN = MWheelDOWN/24;
-            double RoundsABS = (RoundsUP + RoundsDOWN);
-            labelUP.Text = Math.Truncate(RoundsUP).ToString();
-            labelDOWN.Text = Math.Truncate(RoundsDOWN).ToString();
-            labelABS.Text = Math.Truncate(RoundsABS).ToString();
-
-
-            //Progressbar
-            if ((int)Math.Truncate(distance) <= progressBar1.Maximum)
+            if (mouseEnterflag==true) //Darstellung der Heutigen Statistik wenn Mouse in Form1
             {
-                progressBar1.Value = (int)Math.Truncate(distance);
-                Progressbarlabel.Text = Math.Round((Math.Truncate(distance) / destinationDist*100),2).ToString() +" %"; //Prozentale Berechnung der zurückgelegten Strecke
+                
+                labelLEFT.Text = (ClickLEFT-ClickLEFT_LOADED).ToString();
+                labelMIDDLE.Text = (ClickMIDDLE-ClickMIDDLE_LOADED).ToString();
+                labelRIGHT.Text = (ClickRIGHT-ClickRIGHT_LOADED).ToString();
+                sum = (ClickLEFT + ClickMIDDLE + ClickRIGHT)-(ClickLEFT_LOADED+ClickMIDDLE_LOADED+ClickRIGHT_LOADED);
+
+
+
             }
             else
             {
-                Progressbarlabel.Text = "++++ Ziel erreicht ++++";
-                Progressbarlabel.ForeColor = Color.DarkRed;
-                
-            }
 
+                //Distanz
+                double distancerounded = Math.Round(distance, 0);
+                labelCM.Text = (distancerounded % 100).ToString() + " cm";
+                labelM.Text = distance.ToString();
+                labelM.Text = (Math.Truncate(distancerounded / 100) % 1000).ToString() + " m";
+                labelKM.Text = Math.Truncate(distance / 100000).ToString() + " km";
+
+
+
+
+
+                //Klicks
+                //groupBoxClicks.Text = "Mausklicks";
+                labelLEFT.Text = ClickLEFT.ToString();
+                labelMIDDLE.Text = ClickMIDDLE.ToString();
+                labelRIGHT.Text = ClickRIGHT.ToString();
+                sum = ClickLEFT + ClickMIDDLE + ClickRIGHT;
+
+                if (sum != 0)
+                {
+                    double PercLEFTClick = (ClickLEFT / sum) * 100;
+                    double PercMIDDLEClick = (ClickMIDDLE / sum) * 100;
+                    double PercRIGHTClick = (ClickRIGHT / sum) * 100;
+                    PercLEFT.Text = Math.Round(PercLEFTClick, 1).ToString() + " %";
+                    PercMIDDLE.Text = Math.Round(PercMIDDLEClick, 1).ToString() + " %";
+                    PercRIGHT.Text = Math.Round(PercRIGHTClick, 1).ToString() + " %";
+                }
+
+                //Wheelrounds
+                double RoundsUP = MWheelUP / 24;
+                double RoundsDOWN = MWheelDOWN / 24;
+                double RoundsABS = (RoundsUP + RoundsDOWN);
+                labelUP.Text = Math.Truncate(RoundsUP).ToString();
+                labelDOWN.Text = Math.Truncate(RoundsDOWN).ToString();
+                labelABS.Text = Math.Truncate(RoundsABS).ToString();
+
+
+                //Progressbar
+                if ((int)Math.Truncate(distance) <= progressBar1.Maximum)
+                {
+                    progressBar1.Value = (int)Math.Truncate(distance);
+                    Progressbarlabel.Text = Math.Round((Math.Truncate(distance) / destinationDist * 100), 2).ToString() + " %"; //Prozentale Berechnung der zurückgelegten Strecke
+                }
+                else
+                {
+                    Progressbarlabel.Text = "++++ Ziel erreicht ++++";
+                    Progressbarlabel.ForeColor = Color.DarkRed;
+
+                }
+
+                //Reset
+                LastResetlabel.Text = "Letzter Reset am: " + lastReset.ToString();
+            }
         }
 
 #endregion
@@ -225,7 +256,7 @@ namespace Mausometer
 
 #region Umrechnungsfunktionen
 
-        private double Px2Dist(double Pix, double DPI) //Umrechnen von Pixeldistanz in Metrische Distanz (cm)
+        private double Px2Dist(double Pix, double DPI) //Umrechnen von Pixeldistanz in metrische Distanz (cm)
         {
             
             Double Dist = Pix / DPI * 2.54;
@@ -268,9 +299,35 @@ namespace Mausometer
 
         }
 
-#endregion
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
-#region SystemtrayIcon
+        }
+
+
+
+        #endregion
+
+        #region MausEnterEvents: Heutige Statistik
+        //Darstellung der heutigen Satistik +++In ARBEIT ++++
+
+        private void Form1_MouseEnter(object sender, EventArgs e)
+        {
+           //mouseEnterflag = true;
+          // groupBoxClicks.Text = "Heutige Mausklicks"; //Groupbox wird nicht in GUI Methode umgeändert, da sonst flackern im Label entsteht!
+        }
+
+        private void Form1_MouseLeave(object sender, EventArgs e)
+        {
+          //  bool mouseEnterflag = false;
+            //groupBoxClicks.Text = "Mausklicks";
+        }
+
+        
+
+        #endregion
+
+        #region SystemtrayIcon
         private void Form1_SizeChanged(object sender, EventArgs e)  //Bei Minimierung in Systemtray
         {
             bool MousePointerNotOnTaskBar = Screen.GetWorkingArea(this).Contains(Cursor.Position);
